@@ -9,7 +9,7 @@ import nltk
 
 nltk.download('stopwords')
 
-SCRAPINGBEE_API_KEY = "NET733AO4YPT1IX4ZLWXXS662HCSJX8FFHPZ3ZHVGPGL29WP4P6OXTS1R7LMX7BDGRF236ELQJOENFB3"
+SCRAPERAPI_KEY = "9dde42e63d33c31226c22ed62e7f601c"
 
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
 
@@ -25,8 +25,8 @@ if st.button("Analisar"):
     for pagina in urls:
         try:
             st.info(f"⏳ Coletando: {pagina}")
-            api_url = f"https://app.scrapingbee.com/api/v1/?api_key={SCRAPINGBEE_API_KEY}&url={pagina}&render_js=True"
-            response = requests.get(api_url, timeout=30)
+            api_url = f"http://api.scraperapi.com/?api_key={SCRAPERAPI_KEY}&url={pagina}&render=true"
+            response = requests.get(api_url, timeout=40)
             if response.status_code != 200:
                 raise Exception(f"Erro HTTP {response.status_code}")
 
