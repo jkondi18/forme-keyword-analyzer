@@ -24,15 +24,19 @@ if st.button("Analisar"):
 
     for pagina in urls:
         try:
+            st.info(f"⏳ Coletando: {pagina}")
             api_url = f"https://app.scrapingbee.com/api/v1/?api_key={SCRAPINGBEE_API_KEY}&url={pagina}&render_js=True"
-            response = requests.get(api_url)
+            response = requests.get(api_url, timeout=30)
+            if response.status_code != 200:
+                raise Exception(f"Erro HTTP {response.status_code}")
+
             soup = BeautifulSoup(response.text, 'html.parser')
             titulos = soup.select("h2, h3, .post-title, .entry-title, article h1, article h2")
             textos = [t.get_text(strip=True) for t in titulos if t.get_text(strip=True)]
             todos_titulos.extend(textos)
-            st.success(f"Coletado: {pagina} ({len(textos)} títulos)")
+            st.success(f"✅ Coletado: {pagina} ({len(textos)} títulos)")
         except Exception as e:
-            st.error(f"Erro com {pagina}: {e}")
+            st.error(f"❌ Erro ao coletar {pagina}: {e}")
 
     if todos_titulos:
         texto = " ".join(todos_titulos).lower()
