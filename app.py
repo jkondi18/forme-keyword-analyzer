@@ -9,6 +9,8 @@ import nltk
 
 nltk.download('stopwords')
 
+SCRAPINGBEE_API_KEY = "NET733AO4YPT1IX4ZLWXXS662HCSJX8FFHPZ3ZHVGPGL29WP4P6OXTS1R7LMX7BDGRF236ELQJOENFB3"
+
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
 
 st.title("🔍 Analisador de Palavras-Chave de Blogs")
@@ -20,17 +22,17 @@ if st.button("Analisar"):
     urls = [url.strip() for url in urls_input.split(",") if url.strip()]
     todos_titulos = []
 
-    for url in urls:
+    for pagina in urls:
         try:
-            headers = {'User-Agent': 'Mozilla/5.0'}
-            response = requests.get(url, headers=headers, timeout=10)
+            api_url = f"https://app.scrapingbee.com/api/v1/?api_key={SCRAPINGBEE_API_KEY}&url={pagina}&render_js=True"
+            response = requests.get(api_url)
             soup = BeautifulSoup(response.text, 'html.parser')
             titulos = soup.select("h2, h3, .post-title, .entry-title, article h1, article h2")
             textos = [t.get_text(strip=True) for t in titulos if t.get_text(strip=True)]
             todos_titulos.extend(textos)
-            st.success(f"Coletado: {url} ({len(textos)} títulos)")
+            st.success(f"Coletado: {pagina} ({len(textos)} títulos)")
         except Exception as e:
-            st.error(f"Erro com {url}: {e}")
+            st.error(f"Erro com {pagina}: {e}")
 
     if todos_titulos:
         texto = " ".join(todos_titulos).lower()
