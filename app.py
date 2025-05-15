@@ -1,4 +1,3 @@
-
 import streamlit as st
 from bs4 import BeautifulSoup
 import requests
@@ -13,7 +12,7 @@ nltk.download('stopwords')
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
 
 st.title("🔍 Analisador de Palavras-Chave de Blogs")
-st.write("Cole os links de blogs concorrentes separados por vírgula abaixo. O sistema extrai os títulos das páginas (h2/h3) e gera uma análise de palavras mais comuns para orientar o conteúdo da FORME.")
+st.write("Cole os links de blogs concorrentes separados por vírgula abaixo. O sistema extrai os títulos das páginas (h2/h3 e similares) e gera uma análise de palavras mais comuns para orientar o conteúdo da FORME.")
 
 urls_input = st.text_area("Links dos sites", placeholder="https://blog1.com, https://blog2.com")
 
@@ -23,10 +22,11 @@ if st.button("Analisar"):
 
     for url in urls:
         try:
-            response = requests.get(url, timeout=10)
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            response = requests.get(url, headers=headers, timeout=10)
             soup = BeautifulSoup(response.text, 'html.parser')
-            titulos = soup.find_all(['h2', 'h3'])
-            textos = [t.get_text(strip=True) for t in titulos]
+            titulos = soup.select("h2, h3, .post-title, .entry-title, article h1, article h2")
+            textos = [t.get_text(strip=True) for t in titulos if t.get_text(strip=True)]
             todos_titulos.extend(textos)
             st.success(f"Coletado: {url} ({len(textos)} títulos)")
         except Exception as e:
