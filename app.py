@@ -14,7 +14,9 @@ SCRAPERAPI_KEY = "9dde42e63d33c31226c22ed62e7f601c"
 
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
 
-st.title("🔍 Analisador de Palavras-Chave de Blogs")
+st.image("https://raw.githubusercontent.com/jkondi18/forme-keyword-analyzer/main/logo-forme.png", width=300)
+
+st.title("Analisador de Palavras-Chave de Blogs")
 st.write("Cole os links de blogs concorrentes separados por vírgula abaixo. O sistema extrai os títulos das páginas e gera uma análise das expressões mais comuns para orientar o conteúdo da FORME.")
 
 urls_input = st.text_area("Links dos sites", placeholder="https://blog1.com, https://blog2.com")
