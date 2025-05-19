@@ -22,12 +22,18 @@ st.write("Cole os links de blogs concorrentes separados por vírgula abaixo. O s
 
 urls_input = st.text_area("Links dos sites", placeholder="https://blog1.com, https://blog2.com")
 
-# Mapeamento de temas por palavras-chave
+# Mapeamento refinado de temas por palavras-chave
 TEMAS = {
-    "Educação Financeira": ["financeira", "dinheiro", "orçamento", "consumo", "poupança", "investimento"],
+    "Educação Financeira - Hábitos e Consumo": ["consumo", "gastos", "hábito de compra", "impulsivo", "consciente"],
+    "Educação Financeira - Investimentos": ["investimento", "renda", "dividendos", "ações", "poupança"],
+    "Educação Financeira - Orçamento e Planejamento": ["orçamento", "planejamento financeiro", "planejamento mensal", "metas financeiras"],
+    "Gestão Escolar - Planejamento": ["planejamento", "cronograma", "plano anual", "metas pedagógicas"],
+    "Gestão Escolar - Avaliação": ["avaliação", "resultados", "indicadores", "desempenho"],
+    "Gestão Escolar - Liderança e Coordenação": ["coordenação", "liderança", "equipe pedagógica", "direção"],
+    "Gestão Escolar - Cultura e Clima": ["cultura escolar", "clima", "valores", "relacionamento", "ambiente escolar"],
+    "Gestão Escolar - Formação Docente": ["formação", "capacitação", "curso de professores", "treinamento docente"],
     "Tecnologia na Educação": ["tecnologia", "digital", "online", "plataforma", "edtech", "aplicativo"],
     "Carreira e Vestibular": ["vestibular", "enem", "carreira", "profissão", "universidade"],
-    "Gestão Escolar": ["gestão", "coordenação", "liderança", "administração", "planejamento"],
     "Socioemocional e Psicologia": ["emoção", "empatia", "sentimento", "relacionamento", "comportamento", "ansiedade", "autoconhecimento"]
 }
 
@@ -68,7 +74,7 @@ if st.button("Analisar"):
 
         st.download_button("📥 Baixar resultado em Excel", data=df.to_csv(index=False), file_name="expressoes_chave.csv", mime="text/csv")
 
-        # Agrupamento por temas
+        # Agrupamento por temas refinados
         st.subheader("🧠 Análise por Temas Detectados")
         tema_counter = {tema: 0 for tema in TEMAS}
 
