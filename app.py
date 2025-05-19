@@ -13,8 +13,8 @@ import openai
 nltk.download('stopwords')
 
 SCRAPERAPI_KEY = "9dde42e63d33c31226c22ed62e7f601c"
-OPENAI_API_KEY = st.secrets["openai_api_key"]
-openai.api_key = OPENAI_API_KEY
+# openai.api_key = "sk-..."  # COMENTE essa linha se estiver usando st.secrets
+openai.api_key = st.secrets["openai_api_key"]
 
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
 
