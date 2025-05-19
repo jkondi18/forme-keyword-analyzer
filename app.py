@@ -7,6 +7,7 @@ import string
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
+import re
 
 nltk.download('stopwords')
 
@@ -14,12 +15,21 @@ SCRAPERAPI_KEY = "9dde42e63d33c31226c22ed62e7f601c"
 
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
 
-st.image("https://raw.githubusercontent.com/jkondi18/forme-keyword-analyzer/main/logo-forme.png", width=300)
+st.image("logo-forme.png", width=300)
 
 st.title("Analisador de Palavras-Chave de Blogs")
 st.write("Cole os links de blogs concorrentes separados por vírgula abaixo. O sistema extrai os títulos das páginas e gera uma análise das expressões mais comuns para orientar o conteúdo da FORME.")
 
 urls_input = st.text_area("Links dos sites", placeholder="https://blog1.com, https://blog2.com")
+
+# Mapeamento de temas por palavras-chave
+TEMAS = {
+    "Educação Financeira": ["financeira", "dinheiro", "orçamento", "consumo", "poupança", "investimento"],
+    "Tecnologia na Educação": ["tecnologia", "digital", "online", "plataforma", "edtech", "aplicativo"],
+    "Carreira e Vestibular": ["vestibular", "enem", "carreira", "profissão", "universidade"],
+    "Gestão Escolar": ["gestão", "coordenação", "liderança", "administração", "planejamento"],
+    "Socioemocional e Psicologia": ["emoção", "empatia", "sentimento", "relacionamento", "comportamento", "ansiedade", "autoconhecimento"]
+}
 
 if st.button("Analisar"):
     urls = [url.strip() for url in urls_input.split(",") if url.strip()]
@@ -57,5 +67,21 @@ if st.button("Analisar"):
         st.dataframe(df.head(20).reset_index(drop=True), use_container_width=True)
 
         st.download_button("📥 Baixar resultado em Excel", data=df.to_csv(index=False), file_name="expressoes_chave.csv", mime="text/csv")
+
+        # Agrupamento por temas
+        st.subheader("🧠 Análise por Temas Detectados")
+        tema_counter = {tema: 0 for tema in TEMAS}
+
+        for titulo in texto:
+            for tema, palavras in TEMAS.items():
+                for palavra in palavras:
+                    if re.search(rf"\b{palavra}\b", titulo):
+                        tema_counter[tema] += 1
+
+        tema_df = pd.DataFrame(list(tema_counter.items()), columns=["Tema", "Ocorrências"])
+        tema_df = tema_df.sort_values("Ocorrências", ascending=False)
+
+        st.dataframe(tema_df, use_container_width=True)
+
     else:
         st.warning("Nenhum título encontrado nos links fornecidos.")
