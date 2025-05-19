@@ -8,10 +8,13 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 import re
+import openai
 
 nltk.download('stopwords')
 
 SCRAPERAPI_KEY = "9dde42e63d33c31226c22ed62e7f601c"
+OPENAI_API_KEY = st.secrets["openai_api_key"]
+openai.api_key = OPENAI_API_KEY
 
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
 
@@ -88,6 +91,26 @@ if st.button("Analisar"):
         tema_df = tema_df.sort_values("Ocorrências", ascending=False)
 
         st.dataframe(tema_df, use_container_width=True)
+
+        # Geração de pautas com IA
+        temas_relevantes = tema_df[tema_df['Ocorrências'] > 0]['Tema'].tolist()
+
+        if temas_relevantes:
+            st.subheader("🧠 Sugestão de Pautas com IA")
+            prompt = f"Crie 3 ideias de pautas para um blog de educação financeira com base nos temas: {', '.join(temas_relevantes)}"
+
+            try:
+                resposta = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "Você é um especialista em marketing de conteúdo educacional."},
+                        {"role": "user", "content": prompt}
+                    ]
+                )
+                pautas = resposta['choices'][0]['message']['content']
+                st.markdown(f"**Pautas sugeridas:**\n\n{pautas}")
+            except Exception as e:
+                st.error(f"Erro ao gerar pautas com IA: {e}")
 
     else:
         st.warning("Nenhum título encontrado nos links fornecidos.")
