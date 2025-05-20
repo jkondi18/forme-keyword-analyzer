@@ -13,7 +13,6 @@ import openai
 nltk.download('stopwords')
 
 SCRAPERAPI_KEY = "9dde42e63d33c31226c22ed62e7f601c"
-# openai.api_key = "sk-..."  # COMENTE essa linha se estiver usando st.secrets
 openai.api_key = st.secrets["openai_api_key"]
 
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
@@ -47,7 +46,7 @@ if st.button("Analisar"):
     for pagina in urls:
         try:
             st.info(f"⏳ Coletando: {pagina}")
-            api_url = f"http://api.scraperapi.com/?api_key={SCRAPERAPI_KEY}&url={pagina}&render=true"
+            api_url = f"http://api.scraperapi.com/?api_key={SCRAPERAPI_KEY}&url={pagina}"
             response = requests.get(api_url, timeout=40)
             if response.status_code != 200:
                 raise Exception(f"Erro HTTP {response.status_code}")
