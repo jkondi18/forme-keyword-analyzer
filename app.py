@@ -8,12 +8,13 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 import re
-import openai
+from openai import OpenAI
 
 nltk.download('stopwords')
 
 SCRAPERAPI_KEY = "9dde42e63d33c31226c22ed62e7f601c"
-openai.api_key = st.secrets["openai_api_key"]
+openai_api_key = st.secrets["openai_api_key"]
+client = OpenAI(api_key=openai_api_key)
 
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
 st.image("logo-forme.png", width=300)
@@ -97,7 +98,7 @@ if st.button("Analisar"):
             prompt = f"Crie 3 ideias de pautas para um blog de educação financeira com base nos temas: {', '.join(temas_relevantes)}"
 
             try:
-                resposta = openai.chat.completions.create(
+                resposta = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": "Você é um especialista em marketing de conteúdo educacional."},
