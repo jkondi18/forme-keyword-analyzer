@@ -16,7 +16,6 @@ SCRAPERAPI_KEY = "9dde42e63d33c31226c22ed62e7f601c"
 openai.api_key = st.secrets["openai_api_key"]
 
 st.set_page_config(page_title="Analisador de Palavras-Chave", page_icon="🔍")
-
 st.image("logo-forme.png", width=300)
 
 st.title("Analisador de Palavras-Chave de Blogs")
@@ -24,7 +23,6 @@ st.write("Cole os links de blogs concorrentes separados por vírgula abaixo. O s
 
 urls_input = st.text_area("Links dos sites", placeholder="https://blog1.com, https://blog2.com")
 
-# Mapeamento refinado de temas por palavras-chave
 TEMAS = {
     "Educação Financeira - Hábitos e Consumo": ["consumo", "gastos", "hábito de compra", "impulsivo", "consciente"],
     "Educação Financeira - Investimentos": ["investimento", "renda", "dividendos", "ações", "poupança"],
@@ -47,6 +45,8 @@ if st.button("Analisar"):
         try:
             st.info(f"⏳ Coletando: {pagina}")
             api_url = f"http://api.scraperapi.com/?api_key={SCRAPERAPI_KEY}&url={pagina}"
+            if "formeeduca.com.br" in pagina or "dsop" in pagina:
+                api_url += "&render=true"
             response = requests.get(api_url, timeout=40)
             if response.status_code != 200:
                 raise Exception(f"Erro HTTP {response.status_code}")
@@ -76,7 +76,6 @@ if st.button("Analisar"):
 
         st.download_button("📥 Baixar resultado em Excel", data=df.to_csv(index=False), file_name="expressoes_chave.csv", mime="text/csv")
 
-        # Agrupamento por temas refinados
         st.subheader("🧠 Análise por Temas Detectados")
         tema_counter = {tema: 0 for tema in TEMAS}
 
@@ -91,7 +90,6 @@ if st.button("Analisar"):
 
         st.dataframe(tema_df, use_container_width=True)
 
-        # Geração de pautas com IA
         temas_relevantes = tema_df[tema_df['Ocorrências'] > 0]['Tema'].tolist()
 
         if temas_relevantes:
@@ -99,17 +97,16 @@ if st.button("Analisar"):
             prompt = f"Crie 3 ideias de pautas para um blog de educação financeira com base nos temas: {', '.join(temas_relevantes)}"
 
             try:
-                resposta = openai.ChatCompletion.create(
+                resposta = openai.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": "Você é um especialista em marketing de conteúdo educacional."},
                         {"role": "user", "content": prompt}
                     ]
                 )
-                pautas = resposta['choices'][0]['message']['content']
+                pautas = resposta.choices[0].message.content
                 st.markdown(f"**Pautas sugeridas:**\n\n{pautas}")
             except Exception as e:
                 st.error(f"Erro ao gerar pautas com IA: {e}")
-
     else:
         st.warning("Nenhum título encontrado nos links fornecidos.")
