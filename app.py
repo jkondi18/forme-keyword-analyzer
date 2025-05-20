@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 import re
+import altair as alt
 from openai import OpenAI
 
 nltk.download('stopwords')
@@ -90,6 +91,15 @@ if st.button("Analisar"):
         tema_df = tema_df.sort_values("Ocorrências", ascending=False)
 
         st.dataframe(tema_df, use_container_width=True)
+
+        st.subheader("📈 Gráfico de Frequência por Tema")
+        chart = alt.Chart(tema_df).mark_bar().encode(
+            x=alt.X('Ocorrências:Q', title='Quantidade'),
+            y=alt.Y('Tema:N', sort='-x', title='Tema'),
+            color=alt.value("#1f77b4")
+        ).properties(height=400)
+
+        st.altair_chart(chart, use_container_width=True)
 
         temas_relevantes = tema_df[tema_df['Ocorrências'] > 0]['Tema'].tolist()
 
